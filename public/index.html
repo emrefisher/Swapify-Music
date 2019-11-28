@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="swapify.css">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+   integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+   integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+   integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+        var redirect_uri = "http://localhost:8080";
+
+        function loginSpotify() {
+                var redirect_uri = "http://localhost:8080/redirect";
+                var client_id = "60721dc9caed46d29fc97b701636ca48";
+                window.location="https://accounts.spotify.com/authorize?redirect_uri=" + redirect_uri + "&response_type=code&client_id=" + client_id;
+        }
+
+        function addButtons() {
+                document.getElementById("search_bar").innerHTML += "<br><button onclick='transferAll()'>Transfer All</button><button onclick='transfer()'>Transfer</button>"
+        }
+
+        function logIn_Apple() {
+                var apple_id = document.getElementById("apple_id").value;
+                var password = document.getElementById("apple_pass").value;
+                var xhr = new XMLHttpRequest();
+        }
+
+        function responseRecievedHandler() {
+                if (this.status==200) {
+                        console.log("success: " + this.response);
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+</script>
+<title>Swapify Music</title>
+<head>
+        <h1 id="logo">Swapify Music</h1>
+</head>
+<body>
+        <section id="search_bar">
+                <input id="bar" type="text"><br><br>
+        </section>
+        <section id="logins">
+                <div id="apple-login" class="container-fluid">
+                        <h1>Step 2: Authorize with Apple</h1><br><br>
+                        <button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>
+                </div>
+                <div id="spotify-login" class="container-fluid">
+                        <h1>Step 1: Authorize with Spotify</h1><br><br>
+                        <button id="spotify_button" onclick="loginSpotify()">Log In To Spotify</button>
+                </div>
+        </section>
+        <section id="info">
+                <div>
+                </div>
+        </section>
+</body>
+</html>
