@@ -53,7 +53,7 @@ button {
 }
 
 #spotify_button {
-    margin-top: 75%;
+    margin-top: 55%;
     border: 1px solid white;
 }
 
@@ -117,4 +117,15 @@ input::-webkit-input-placeholder {
     background: black;
     width: 50%;
     height: 100%;
+}
+
+#spotify_logo {
+    width: 500px;
+    height: 150px;
+}
+
+#apple_logo {
+    margin-top: 10px;
+    width: 480px;
+    height: 110px;
 }

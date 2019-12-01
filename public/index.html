@@ -49,9 +49,24 @@
                         console.log("failure: " + this.response);
                 }
         }
+
+        function check4SpotAuth() {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get("access_token")) {
+                        var access_token = urlParams.get("access_token");
+                        var button = document.getElementById("spotify_button")
+                        button.innerHTML="&#10004;"
+                        button.style.backgroundColor="lightgreen";
+                        button.style.borderRadius="50px";
+                        button.removeAttribute('onclick');
+                } else {
+                        return 0;
+                }
+        }
+
         let music = MusicKit.getInstance();
 
- // This is called with or without authorization: 
+ // This is called with or without authorization:
  music.player.play();
 
  // This ensures user authorization before calling play():
@@ -84,19 +99,21 @@
 <head>
         <h1 id="logo">Swapify Music</h1>
 </head>
-<body>
+<body onload="check4SpotAuth()">
         <section id="search_bar">
                 <input id="bar" type="text"><br><br>
         </section>
         <section id="logins">
                 <div id="apple-login" class="container-fluid">
                         <h1>Step 2: Authorize with Apple</h1><br><br>
+                        <img id="apple_logo" src="apple_logo.png"/>
                         <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
                         <button id="apple-music-authorize">Authorize</button>
                         <button id="apple-music-unauthorize">Unauthorize</button>
                 </div>
                 <div id="spotify-login" class="container-fluid">
                         <h1>Step 1: Authorize with Spotify</h1><br><br>
+                        <img id="spotify_logo" src="spotify_logo.png"/>
                         <button id="spotify_button" onclick="loginSpotify()">Log In To Spotify</button>
                 </div>
         </section>
