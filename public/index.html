@@ -18,6 +18,10 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+<!-- Apple MusicKit Include -->
+<script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+
+
 <script type="text/javascript">
 
         var redirect_uri = "http://localhost:8080";
@@ -45,6 +49,36 @@
                         console.log("failure: " + this.response);
                 }
         }
+        let music = MusicKit.getInstance();
+
+ // This is called with or without authorization: 
+ music.player.play();
+
+ // This ensures user authorization before calling play():
+ music.authorize().then(function() {
+   music.player.play();
+ });
+
+ // You can wrap any method to ensure authorization before calling:
+ music.authorize().then(function() {
+   music.api.library.albums.then(function(cloudAlbums) {
+     // user's cloudAlbums
+   });
+ });
+</script>
+
+<!-- Apple Music setup -->
+<script type="text/javascript">
+    document.addEventListener('musickitloaded', function() {
+  // MusicKit global is now defined
+  MusicKit.configure({
+    developerToken: 'DEVELOPER-TOKEN',
+    app: {
+      name: 'Swapify Music',
+      build: '1.0'
+    }
+  });
+});
 </script>
 <title>Swapify Music</title>
 <head>
@@ -57,7 +91,9 @@
         <section id="logins">
                 <div id="apple-login" class="container-fluid">
                         <h1>Step 2: Authorize with Apple</h1><br><br>
-                        <button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>
+                        <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
+                        <button id="apple-music-authorize">Authorize</button>
+                        <button id="apple-music-unauthorize">Unauthorize</button>
                 </div>
                 <div id="spotify-login" class="container-fluid">
                         <h1>Step 1: Authorize with Spotify</h1><br><br>
