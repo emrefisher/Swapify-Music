@@ -24,7 +24,25 @@
 
 <script type="text/javascript">
 
+    let music = MusicKit.getInstance();
+
+ // This is called with or without authorization: 
+ music.player.play();
+
+ // This ensures user authorization before calling play():
+ music.authorize().then(function() {
+   music.player.play();
+ });
+
+ // You can wrap any method to ensure authorization before calling:
+ music.authorize().then(function() {
+   music.api.library.albums.then(function(cloudAlbums) {
+     // user's cloudAlbums
+   });
+ });
         var redirect_uri = "http://localhost:8080";
+
+
 
         function loginSpotify() {
                 var redirect_uri = "http://localhost:8080/redirect";
@@ -49,22 +67,7 @@
                         console.log("failure: " + this.response);
                 }
         }
-        let music = MusicKit.getInstance();
-
- // This is called with or without authorization: 
- music.player.play();
-
- // This ensures user authorization before calling play():
- music.authorize().then(function() {
-   music.player.play();
- });
-
- // You can wrap any method to ensure authorization before calling:
- music.authorize().then(function() {
-   music.api.library.albums.then(function(cloudAlbums) {
-     // user's cloudAlbums
-   });
- });
+        
 </script>
 
 <!-- Apple Music setup -->
@@ -72,7 +75,7 @@
     document.addEventListener('musickitloaded', function() {
   // MusicKit global is now defined
   MusicKit.configure({
-    developerToken: 'DEVELOPER-TOKEN',
+    developerToken: './client_secret.json',
     app: {
       name: 'Swapify Music',
       build: '1.0'
