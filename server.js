@@ -56,7 +56,6 @@ app.get("/logInApple", function (req, res) {
             alg: "ES256",
             kid: keyId
         }
-        });
-
-        console.log(jwtToken);
-        });
+    });
+    res.send(jwtToken);
+});

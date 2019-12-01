@@ -2,6 +2,9 @@
 <html lang="en">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-music-developer-token" content="eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ">
+ <meta name="apple-music-app-name" content="Swapify Music">
+ <meta name="apple-music-app-build" content="1978.4.1">
 <link rel="stylesheet" type="text/css" href="swapify.css">
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
@@ -23,8 +26,11 @@
 
 
 <script type="text/javascript">
-
         var redirect_uri = "http://localhost:8080";
+
+        function createMusik(dev_token) {
+                var music = MusicKit.getInstance();
+        }
 
         function loginSpotify() {
                 var redirect_uri = "http://localhost:8080/redirect";
@@ -38,6 +44,7 @@
 
         function logIn_Apple() {
                 var xhr = new XMLHttpRequest();
+                xhr.addEventListener("load", tokenHander);
                 xhr.open("GET", "http://localhost:8080/logInApple")
                 xhr.send();
         }
@@ -47,6 +54,14 @@
                         console.log("success: " + this.response);
                 } else {
                         console.log("failure: " + this.response);
+                }
+        }
+
+        function tokenHander() {
+                if (this.status == 200) {
+                        createMusik(this.response);
+                } else {
+                        console.log('failure: ' + this.response);
                 }
         }
 
@@ -79,13 +94,13 @@
                         <h1>Step 2: Authorize with Apple</h1><br><br>
                         <img id="apple_logo" src="apple_logo.png"/>
                         <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
-                        <button id="apple-music-authorize" onclick="logIn_Apple()">Authorize</button>
-                        <button id="apple-music-unauthorize">Unauthorize</button>
+                        <button class="apple_button_1" id="apple-music-authorize" onclick="logIn_Apple()">Authorize</button>
+                        <button class="apple_button_2" id="apple-music-unauthorize">Unauthorize</button>
                 </div>
                 <div id="spotify-login" class="container-fluid">
                         <h1>Step 1: Authorize with Spotify</h1><br><br>
                         <img id="spotify_logo" src="spotify_logo.png"/>
-                        <button id="spotify_button" onclick="loginSpotify()">Log In To Spotify</button>
+                        <button id="spotify_button" onclick="loginSpotify()">Authorize</button>
                 </div>
         </section>
         <section id="info">
