@@ -37,9 +37,9 @@
         }
 
         function logIn_Apple() {
-                var apple_id = document.getElementById("apple_id").value;
-                var password = document.getElementById("apple_pass").value;
                 var xhr = new XMLHttpRequest();
+                xhr.open("GET", "http://localhost:8080/logInApple")
+                xhr.send();
         }
 
         function responseRecievedHandler() {
@@ -64,36 +64,7 @@
                 }
         }
 
-        let music = MusicKit.getInstance();
 
- // This is called with or without authorization:
- music.player.play();
-
- // This ensures user authorization before calling play():
- music.authorize().then(function() {
-   music.player.play();
- });
-
- // You can wrap any method to ensure authorization before calling:
- music.authorize().then(function() {
-   music.api.library.albums.then(function(cloudAlbums) {
-     // user's cloudAlbums
-   });
- });
-</script>
-
-<!-- Apple Music setup -->
-<script type="text/javascript">
-    document.addEventListener('musickitloaded', function() {
-  // MusicKit global is now defined
-  MusicKit.configure({
-    developerToken: 'DEVELOPER-TOKEN',
-    app: {
-      name: 'Swapify Music',
-      build: '1.0'
-    }
-  });
-});
 </script>
 <title>Swapify Music</title>
 <head>
@@ -108,7 +79,7 @@
                         <h1>Step 2: Authorize with Apple</h1><br><br>
                         <img id="apple_logo" src="apple_logo.png"/>
                         <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
-                        <button id="apple-music-authorize">Authorize</button>
+                        <button id="apple-music-authorize" onclick="logIn_Apple()">Authorize</button>
                         <button id="apple-music-unauthorize">Unauthorize</button>
                 </div>
                 <div id="spotify-login" class="container-fluid">

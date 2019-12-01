@@ -2,6 +2,8 @@ var express = require( "express" );
 var request = require( "request" );
 var buffer = require( "buffer" );
 var cors = require("cors");
+const fs      = require("fs");
+const jwt     = require("jsonwebtoken");
 var spotify_data = require( "./spotify.json" );
 
 var app = express();
@@ -17,8 +19,8 @@ app.get("/", function (req, res) {
 });
 app.get("/redirect", function (req, res) {
 
-    CLIENT_SECRET = spotify_data.client_secret;
-    CLIENT_ID = spotify_data.client_id;
+    var CLIENT_SECRET = spotify_data.client_secret;
+    var CLIENT_ID = spotify_data.client_id;
     var access_code = req.query.code;
 
     request.post({
@@ -40,3 +42,21 @@ app.get("/redirect", function (req, res) {
     });
 });
 
+app.get("/logInApple", function (req, res) {
+
+    const privateKey = fs.readFileSync("./AuthKey_9655XXK2TC.p8").toString();
+    const teamId     = "38UN2K8879";
+    const keyId      = "9655XXK2TC";
+
+    const jwtToken = jwt.sign({}, privateKey, {
+        algorithm: "ES256",
+        expiresIn: "180d",
+        issuer: teamId,
+        header: {
+            alg: "ES256",
+            kid: keyId
+        }
+        });
+
+        console.log(jwtToken);
+        });
