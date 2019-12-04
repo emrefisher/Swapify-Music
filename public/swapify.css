@@ -15,9 +15,7 @@ html {
 #spotify-login {
     font-variant: small-caps;
     font-size: 20pt;
-    z-index: 1;
-    background-color:black;
-    opacity: 0.9;
+    background-color: rgba(0,0,0,0.95);
     height: 90%;
     text-align: center;
     border: 5pt solid lightgreen;
@@ -31,9 +29,8 @@ html {
 #apple-login {
     font-variant: small-caps;
     font-size: 20pt;
-    z-index: 1;
     background-color: black;
-    opacity: 0.9;
+    opacity: 0.95;
     height: 90%;
     color: whitesmoke;
     text-align: center;
@@ -55,9 +52,15 @@ button {
 #spotify_button {
     margin-top: 55%;
     border: 1px solid white;
+    position: static;
 }
 
 .apple_button_1 {
+    margin-top: 60%;
+    border: 1px solid white;
+}
+
+.apple_button_2 {
     margin-top: 60%;
     border: 1px solid white;
 }
@@ -76,40 +79,53 @@ button {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
+.apple_button_2:hover {
+    background-color: violet;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
 #bar {
-    height: 40px;
+    height: 50px;
+    text-align: center;
+    background-color: rgb(75, 63, 63);
+    color: whitesmoke;
+    border: whitesmoke;
+    font-size: 20pt;
+
 }
 
 #search_bar {
-    z-index: 10;
-    height: 100px;
-    text-align: center;
-    position: fixed;
-    top: 95%;
-    width: 100%;
-}
-
-input[type=text] {
-    color:black;
+    font-family: 'Times New Roman', Times, serif;
+    font-variant: none;
+    font-size: 15pt;
+    text-align: left;
+    height: 40px;
+    width: 80%;
+    background-color: rgb(82, 124, 85);
+    float: left;
     border: 2px solid black;
-    background-color:lightgrey;
+    position: relative;
+}
+
+#search_submit {
+    float: left;
+    width: 20%;
+    height: 40px;
+    border: 2px solid black;
+    position: relative;
+    background-color:  rgb(82, 124, 85);
+    background-image: url("magnifying_glass.png");
+    background-size: 33px 33px;
     background-repeat: no-repeat;
-    border-radius: 20px;
-    transition-duration: 0.4s;
-    background-image: url("magnifying glass.png");
-    background-size: contain;
-}
+    background-position: 40% 1px;
 
-input:focus {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-    background-image: none;
-    text-indent: 0px;
-    width: 100%;
 }
-
 input::-webkit-input-placeholder {
     color: black;
-    text-align: center;
+    text-align: left;
+    font-style: italic;
 }
 
 #info {
@@ -120,12 +136,78 @@ input::-webkit-input-placeholder {
 }
 
 #spotify_logo {
-    width: 500px;
-    height: 150px;
+    width: 600px;
+    height: 180px;
 }
 
 #apple_logo {
     margin-top: 10px;
     width: 480px;
     height: 110px;
+}
+
+#profile_image {
+    margin-right: 400px;
+    margin-top: 10px;
+    padding: 0px;
+    border-radius: 1000px;
+    height: 200px;
+    width: 200px;
+    border: 5px solid lightgreen;
+    -moz-box-shadow: 0px 6px 5px grey;
+    -webkit-box-shadow: 0px 6px 5px grey;
+    box-shadow: 0px 6px 5px grey;
+}
+
+#logged_in_statement {
+    margin-right: 400px;
+    margin-top: 150px;
+    color: rgb(216, 215, 215);
+    font-family: sans-serif;
+}
+
+#container {
+    font-size: 17pt;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: black;
+    height: 300px;
+    overflow-y: scroll;
+    margin-left: 45%;
+    margin-right: 10%;
+    margin-top: -300px;
+    text-align: none;
+}
+
+.checkboxes {
+    text-align: left;
+    display: block;
+    border-bottom: 0.5px solid grey;
+    border-top: 0.5px solid grey;
+}
+
+.transferbuttons {
+    font-size: 16px;
+    width: 170px;
+}
+
+#buttons {
+    margin-left: 280px;
+}
+
+.transferbuttons:hover {
+    background-color: lightgreen;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+input [type=checkbox]{
+    -webkit-appearance: button;
+    border-radius: 0;
+}
+
+#user_name {
+    position: relative;
+    margin-right: 400px;
+    margin-top: 10px;
 }

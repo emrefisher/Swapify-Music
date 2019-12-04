@@ -24,18 +24,16 @@
 <!-- Apple MusicKit Include -->
 <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
 
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script type="text/javascript">
         var redirect_uri = "http://localhost:8080";
 
-        function createMusik(dev_token) {
-                var music = MusicKit.getInstance();
-        }
-
         function loginSpotify() {
                 var redirect_uri = "http://localhost:8080/redirect";
                 var client_id = "60721dc9caed46d29fc97b701636ca48";
-                window.location="https://accounts.spotify.com/authorize?redirect_uri=" + redirect_uri + "&response_type=code&client_id=" + client_id;
+                var scope = "playlist-read-private playlist-read-collaborative user-library-read user-read-private user-read-email"
+                window.location="https://accounts.spotify.com/authorize?redirect_uri=" + redirect_uri + "&response_type=code&client_id=" + client_id + "&scope=" + scope;
         }
 
         function addButtons() {
@@ -43,10 +41,40 @@
         }
 
         function logIn_Apple() {
-                var xhr = new XMLHttpRequest();
-                xhr.addEventListener("load", tokenHander);
-                xhr.open("GET", "http://localhost:8080/logInApple")
-                xhr.send();
+                var music = MusicKit.getInstance();
+                music.authorize().then(musicUserToken => {
+                        let apple = axios.create({
+                                baseURL: 'https://api.music.apple.com/v1',
+                                headers: {
+                                        'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                        'Music-User-Token': musicUserToken
+                                }
+                        })
+                        apple.post('/me/library/playlists', {
+                                attributes: {
+                                        name: 'Billie Eilish',
+                                        description: 'Here are my favorite Billie Eilish tracks'
+                                },
+                                relationships: {
+                                        tracks: {
+                                                data:  [
+                                                        {
+                                                        id: '900032829',
+                                                        type: 'songs'
+                                                        }]
+                                        }
+                                }
+                        })
+                        .then(res => {
+                        // successfully created playlist
+                        })
+                        .catch(error => {
+                        // error creating playlist
+                        });
+                })
+                .catch(error => {
+                //error
+                });
         }
 
         function responseRecievedHandler() {
@@ -57,9 +85,9 @@
                 }
         }
 
-        function tokenHander() {
+        function tokenHandler() {
                 if (this.status == 200) {
-                        createMusik(this.response);
+                        console.log("success: " + this.response);
                 } else {
                         console.log('failure: ' + this.response);
                 }
@@ -69,16 +97,60 @@
                 var urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get("access_token")) {
                         var access_token = urlParams.get("access_token");
-                        var button = document.getElementById("spotify_button")
-                        button.innerHTML="&#10004;"
-                        button.style.backgroundColor="lightgreen";
-                        button.style.borderRadius="50px";
-                        button.removeAttribute('onclick');
+                        var button = document.getElementById("spotify_button");
+                        button.hidden = true;
+                        //add user profile info to webpage
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", "http://localhost:8080/loadProfile?access_token=" + access_token);
+                        xhr.addEventListener("load", addUserProfile);
+                        xhr.send();
+
+                        // grab user's playlists
+                        var xhr2 = new XMLHttpRequest();
+                        xhr2.addEventListener("load", populatePlaylists);
+                        xhr2.open("GET", "http://localhost:8080/grabPlaylists?access_token=" + access_token);
+                        xhr2.send();
+
+                        var buttons = document.getElementById("buttons");
+                        buttons.hidden = false;
                 } else {
                         return 0;
                 }
         }
 
+        function addUserProfile() {
+                if (this.status==200) {
+                        document.getElementById("profile_info").innerHTML = this.response;
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+
+        function populatePlaylists() {
+                if (this.status==200) {
+                        var box = document.getElementById("container");
+                        box.innerHTML += this.response;
+                        box.hidden = false;
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+
+        function transferAll() {
+                return 0;
+        }
+
+        function transferSelected() {
+                var playlists = []
+                var allInputs = document.getElementsByTagName("input");
+                for (var i = 0, max = allInputs.length; i < max; i++){
+                        if (allInputs[i].type === 'checkbox' && allInputs[i].checked == true) {
+                                playlists.push(allInputs[i].value)
+                        }
+                }
+                console.log(playlists);
+                return 0;
+        }
 
 </script>
 <title>Swapify Music</title>
@@ -86,9 +158,6 @@
         <h1 id="logo">Swapify Music</h1>
 </head>
 <body onload="check4SpotAuth()">
-        <section id="search_bar">
-                <input id="bar" type="text"><br><br>
-        </section>
         <section id="logins">
                 <div id="apple-login" class="container-fluid">
                         <h1>Step 2: Authorize with Apple</h1><br><br>
@@ -100,11 +169,18 @@
                 <div id="spotify-login" class="container-fluid">
                         <h1>Step 1: Authorize with Spotify</h1><br><br>
                         <img id="spotify_logo" src="spotify_logo.png"/>
+                        <div id="profile_info"></div>
+                        <div id="container" hidden>
+                                <form action="/transferOnce">
+                                        <input id="search_bar" type="text" placeholder="Search.." name="search">
+                                        <button id= "search_submit" type="submit"><i class="fa fa-search"></i></button>
+                                </form>
+                        </div>
+                        <div id="buttons" hidden>
+                                <button class="transferbuttons" onclick="transferAll()">Transfer Library</button>
+                                <button class="transferbuttons" onclick="transferSelected()">Transfer Selected</button>
+                        </div>
                         <button id="spotify_button" onclick="loginSpotify()">Authorize</button>
-                </div>
-        </section>
-        <section id="info">
-                <div>
                 </div>
         </section>
 </body>

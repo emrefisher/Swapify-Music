@@ -6,6 +6,7 @@ const fs      = require("fs");
 const jwt     = require("jsonwebtoken");
 var spotify_data = require( "./spotify.json" );
 
+
 var app = express();
 
 app.use( express.static("public")).use(cors());
@@ -15,7 +16,6 @@ app.listen(8080, () => {
 });
 
 app.get("/", function (req, res) {
-
 });
 app.get("/redirect", function (req, res) {
 
@@ -42,20 +42,50 @@ app.get("/redirect", function (req, res) {
     });
 });
 
-app.get("/logInApple", function (req, res) {
-
-    const privateKey = fs.readFileSync("./AuthKey_9655XXK2TC.p8").toString();
-    const teamId     = "38UN2K8879";
-    const keyId      = "9655XXK2TC";
-
-    const jwtToken = jwt.sign({}, privateKey, {
-        algorithm: "ES256",
-        expiresIn: "180d",
-        issuer: teamId,
-        header: {
-            alg: "ES256",
-            kid: keyId
-        }
+app.get("/loadProfile", function (req, res) {
+    var html = "";
+    var access_token = req.query.access_token;
+    request.get({url: "https://api.spotify.com/v1/me", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body) {
+        var data = JSON.parse(body);
+        html += '<h2 id="logged_in_statement">User:</h2><img id="profile_image" src="' + data.images[0].url + '"/><h3 id="user_name">' + data.display_name + '</h3>';
+        res.send(html);
+        res.end();
     });
-    res.send(jwtToken);
+});
+
+app.get("/grabPlaylists", function (req, res) {
+    var html = "";
+    var access_token = req.query.access_token;
+    request.get({url: "https://api.spotify.com/v1/me", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body) {
+        var data = JSON.parse(body);
+        request.get({url: "https://api.spotify.com/v1/users/" + data.id + "/playlists", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body2) {
+            var data2 = JSON.parse(body2);
+            for (i=0; i<data2.items.length; i++) {
+                console.log(data2.items[i].tracks.href)
+                html += '<div class="checkboxes"><input type="checkbox" class="checkbox" value="' + data2.items[i].tracks.href + '"/>  ' + data2.items[i].name + '</div>';
+            }
+            res.send(html);
+            res.end();
+        });
+    });
+});
+
+app.get("/transferOnce", function (req, res) {
+    return 0;
+});
+
+app.get("/makePlay", function(req,res) {
+    var devKey = req.query.devKey;
+    var userKey = req.query.userKey;
+    console.log("makePlay");
+    request.get({
+        uri: "https://api.music.apple.com/v1/me/library/playlists",
+        headers: {
+            "Authorization": "Bearer " + devKey,// HDC data type specific
+            "Music-User-Token": userKey
+        }
+    }, function (error, response, body) {
+            console.log(body);
+            res.send(response);
+    });
 });
