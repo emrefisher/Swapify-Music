@@ -47,7 +47,11 @@ app.get("/loadProfile", function (req, res) {
     var access_token = req.query.access_token;
     request.get({url: "https://api.spotify.com/v1/me", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body) {
         var data = JSON.parse(body);
-        html += '<h2 id="logged_in_statement">User:</h2><img id="profile_image" src="' + data.images[0].url + '"/><h3 id="user_name">' + data.display_name + '</h3>';
+        if (data.images[0]) {
+            html += '<h2 id="logged_in_statement">User:</h2><img id="profile_image" src="' + data.images[0].url + '"/><h3 id="user_name">' + data.display_name + '</h3>'
+        } else {
+            html += '<h2 id="logged_in_statement">User:</h2><h4 id="profile_image"/>No Profile Picture Found</p><h4 id="user_name">' + data.display_name + '</h3>';
+        }
         res.send(html);
         res.end();
     });
