@@ -1,0 +1,217 @@
+html {
+    height: 100%;
+    background: url("mello.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+#logo {
+    font-variant: small-caps;
+    font-size: 50pt;
+    background-color: black;
+    text-align: center;
+    color: white;
+}
+
+#spotify-login {
+    font-variant: small-caps;
+    font-size: 20pt;
+    background-color: rgba(0,0,0,0.9);
+    height: 90%;
+    text-align: center;
+    border: 5pt solid lightgreen;
+    color: whitesmoke;
+    border-radius: 20px;
+    position: absolute;
+    width: 50%;
+
+}
+
+#apple-login {
+    font-variant: small-caps;
+    font-size: 20pt;
+    background-color: black;
+    opacity: 0.9;
+    height: 90%;
+    color: whitesmoke;
+    text-align: center;
+    border: 5pt solid plum;
+    border-radius: 20px;
+    position: absolute;
+    width: 50%;
+    margin-left: 840px;
+}
+
+button {
+    background-color: black;
+    color: whitesmoke;
+    transition-duration: 0.4s;
+    width: 40%;
+    height: 8%;
+}
+
+#spotify_button {
+    margin-top: 55%;
+    border: 1px solid white;
+    position: static;
+}
+
+.apple_button_1 {
+    margin-top: 60%;
+    border: 1px solid white;
+}
+
+.apple_button_2 {
+    margin-top: 60%;
+    border: 1px solid white;
+}
+
+#spotify_button:hover {
+    background-color: lightgreen;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.apple_button_1:hover {
+    background-color: violet;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.apple_button_2:hover {
+    background-color: violet;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+#bar {
+    height: 50px;
+    text-align: center;
+    background-color: rgb(75, 63, 63);
+    color: whitesmoke;
+    border: whitesmoke;
+    font-size: 20pt;
+
+}
+
+#search_bar {
+    font-family: 'Times New Roman', Times, serif;
+    font-variant: none;
+    font-size: 15pt;
+    text-align: left;
+    height: 40px;
+    width: 80%;
+    background-color: lightgreen;
+    float: left;
+    border: 1px solid black;
+    border-radius: 10px;
+    position: relative;
+    text-indent: 10px;
+}
+
+#search_submit {
+    float: left;
+    width: 20%;
+    height: 40px;
+    border: 2px solid black;
+    border-radius: 10px;
+    position: relative;
+    background-color: lightgreen;
+    background-image: url("magnifying_glass.png");
+    background-size: 33px 33px;
+    background-repeat: no-repeat;
+    background-position: 40% 1px;
+
+}
+input::-webkit-input-placeholder {
+    color: black;
+    text-align: left;
+    font-style: italic;
+}
+
+#info {
+    color: whitesmoke;
+    background: black;
+    width: 50%;
+    height: 100%;
+}
+
+#spotify_logo {
+    width: 600px;
+    height: 180px;
+}
+
+#apple_logo {
+    margin-top: 10px;
+    width: 480px;
+    height: 110px;
+}
+
+#profile_image {
+    margin-right: 400px;
+    margin-top: 10px;
+    padding: 0px;
+    border-radius: 1000px;
+    height: 200px;
+    width: 200px;
+    border: 5px solid lightgreen;
+    -moz-box-shadow: 0px 6px 5px grey;
+    -webkit-box-shadow: 0px 6px 5px grey;
+    box-shadow: 0px 6px 5px grey;
+}
+
+#logged_in_statement {
+    margin-right: 400px;
+    margin-top: 120px;
+    color: rgb(216, 215, 215);
+    font-family: sans-serif;
+}
+
+#container {
+    font-size: 17pt;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: black;
+    height: 300px;
+    overflow-y: scroll;
+    margin-left: 45%;
+    margin-right: 10%;
+    margin-top: -320px;
+    text-align: none;
+    border: 0.5px solid grey;
+}
+
+.checkboxes {
+    text-align: left;
+    display: block;
+    border-bottom: 0.5px solid grey;
+    text-indent: 10px;
+}
+
+.transferbuttons {
+    font-size: 16px;
+    width: 170px;
+}
+
+#buttons {
+    margin-left: 280px;
+}
+
+.transferbuttons:hover {
+    background-color: lightgreen;
+    color: black;
+    border-radius: 20px;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+input [type=checkbox]{
+    -webkit-appearance: button;
+    border-radius: 0;
+}
+
+#user_name {
+    position: relative;
+    margin-right: 400px;
+    margin-top: 10px;
+}

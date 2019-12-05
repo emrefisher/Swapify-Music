@@ -65,7 +65,6 @@ app.get("/grabPlaylists", function (req, res) {
         request.get({url: "https://api.spotify.com/v1/users/" + data.id + "/playlists", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body2) {
             var data2 = JSON.parse(body2);
             for (i=0; i<data2.items.length; i++) {
-                console.log(data2.items[i].tracks.href)
                 html += '<div class="checkboxes"><input type="checkbox" class="checkbox" value="' + data2.items[i].tracks.href + '"/>  ' + data2.items[i].name + '</div>';
             }
             res.send(html);
@@ -81,7 +80,6 @@ app.get("/transferOnce", function (req, res) {
 app.get("/makePlay", function(req,res) {
     var devKey = req.query.devKey;
     var userKey = req.query.userKey;
-    console.log("makePlay");
     request.get({
         uri: "https://api.music.apple.com/v1/me/library/playlists",
         headers: {
@@ -92,4 +90,28 @@ app.get("/makePlay", function(req,res) {
             console.log(body);
             res.send(response);
     });
+});
+
+
+app.post("/transferSelected", function(req,res) {
+    var playlist_array = req.query.playlists
+    var access_token = req.query.access_token
+    var new_array = []
+    for (i=0; i<playlist_array.length; i++) {
+        request.get({
+            uri: playlist_array[i],
+            headers: {"Authorization": "Bearer " + access_token}
+        }, function (error, response, body) {
+                var data = JSON.parse(body);
+                var playlist_tracks = []
+                for (j=0; j<data.items.length; j++) {
+                    //console.log(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
+                    playlist_tracks.push(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
+                }
+                new_array.push(playlist_tracks);
+                if (new_array.length == i) {
+                    res.send(new_array);
+                }
+            });
+    }
 });

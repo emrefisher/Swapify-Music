@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-music-developer-token" content="eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ">
+<meta name="apple-music-app-name" content="Swapify Music">
+<meta name="apple-music-app-build" content="1978.4.1">
+<link rel="stylesheet" type="text/css" href="swapify.css">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+   integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+   integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+   integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+<!-- Apple MusicKit Include -->
+<script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script type="text/javascript">
+        var redirect_uri = "http://localhost:8080";
+
+        function loginSpotify() {
+                var redirect_uri = "http://localhost:8080/redirect";
+                var client_id = "60721dc9caed46d29fc97b701636ca48";
+                var scope = "playlist-read-private playlist-read-collaborative user-library-read user-read-private user-read-email"
+                window.location="https://accounts.spotify.com/authorize?redirect_uri=" + redirect_uri + "&response_type=code&client_id=" + client_id + "&scope=" + scope;
+        }
+
+        function addButtons() {
+                document.getElementById("search_bar").innerHTML += "<br><button onclick='transferAll()'>Transfer All</button><button onclick='transfer()'>Transfer</button>"
+        }
+
+        function logIn_Apple() {
+                var music = MusicKit.getInstance();
+                music.authorize().then(musicUserToken => {
+                        let apple = axios.create({
+                                baseURL: 'https://api.music.apple.com/v1',
+                                headers: {
+                                        'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                        'Music-User-Token': musicUserToken
+                                }
+                        })
+                        apple.post('/me/library/playlists', {
+                                attributes: {
+                                        name: 'Billie Eilish',
+                                        description: 'Here are my favorite Billie Eilish tracks'
+                                },
+                                relationships: {
+                                        tracks: {
+                                                data:  [
+                                                        {
+                                                        id: '900032829',
+                                                        type: 'songs'
+                                                        }]
+                                        }
+                                }
+                        })
+                        .then(res => {
+                        // successfully created playlist
+                        })
+                        .catch(error => {
+                        // error creating playlist
+                        });
+                })
+                .catch(error => {
+                //error
+                });
+        }
+
+        function responseRecievedHandler() {
+                if (this.status==200) {
+                        console.log("success: " + this.response);
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+
+        function tokenHandler() {
+                if (this.status == 200) {
+                        console.log("success: " + this.response);
+                } else {
+                        console.log('failure: ' + this.response);
+                }
+        }
+
+        function check4SpotAuth() {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get("access_token")) {
+                        var access_token = urlParams.get("access_token");
+                        var button = document.getElementById("spotify_button");
+                        button.hidden = true;
+                        //add user profile info to webpage
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", "http://localhost:8080/loadProfile?access_token=" + access_token);
+                        xhr.addEventListener("load", addUserProfile);
+                        xhr.send();
+
+                        // grab user's playlists
+                        var xhr2 = new XMLHttpRequest();
+                        xhr2.addEventListener("load", populatePlaylists);
+                        xhr2.open("GET", "http://localhost:8080/grabPlaylists?access_token=" + access_token);
+                        xhr2.send();
+
+                        var buttons = document.getElementById("buttons");
+                        buttons.hidden = false;
+                } else {
+                        return 0;
+                }
+        }
+
+        function addUserProfile() {
+                if (this.status==200) {
+                        document.getElementById("profile_info").innerHTML = this.response;
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+
+        function populatePlaylists() {
+                if (this.status==200) {
+                        var box = document.getElementById("container");
+                        box.innerHTML += this.response;
+                        box.hidden = false;
+                } else {
+                        console.log("failure: " + this.response);
+                }
+        }
+
+        function transferAll() {
+                return 0;
+        }
+
+        function responseRecievedHandler3() {
+                if (this.status==200) {
+                        var ids = [];
+                        var music = MusicKit.getInstance();
+                        for (j=0; j<this.length; j++)
+                                for(var i = 0; i<this.length;i++) {
+                                        let entry = music.api.search(this[i], { limit: 5, types: 'artists,albums,songs' });
+
+                                        entry.then(function(ent) {
+                                        var song = {id: ent.songs.data[0].id, type: 'songs' }
+                                        ids.push(song);
+                
+                                        }).then(function(result) {
+                                        console.log("these are results");
+                                        console.log(ids);
+                                        music.authorize().then(musicUserToken => {
+
+                                                let apple = axios.create({
+                                                        baseURL: 'https://api.music.apple.com/v1',
+                                                        headers: {
+                                                                'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                                                'Music-User-Token': musicUserToken
+                                                }
+                                        })
+                                        console.log("ids len: " + ids.length);
+                                        console.log(ids);
+                                        console.log("trans len: " + trans.length)
+                                        if(ids.length==trans.length) {
+                                        apple.post('/me/library/playlists', {
+                                                attributes: {
+                                                        name: 'App',
+                                                        description: 'what a playlist!'
+                                                },
+                                                relationships: {
+                                                        tracks: {
+                                                                data:  ids
+                                                        
+                                        }
+                                }
+                        })
+                        .then(res => {
+                        // successfully created playlist
+                        console.log(res);
+                        
+                        })
+                        .catch(error => {
+                        // error creating playlist
+                        console.log("error");
+                        });
+                }})
+            }).catch(error => {
+                    console.log(error);
+                //error
+                });
+        }}
+                } else {
+                        console.log("failure");
+                }
+        }
+
+        function transferSelected() {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get("access_token")) {
+                        var access_token = urlParams.get("access_token");
+
+                var playlists = ""
+                var allInputs = document.getElementsByTagName("input");
+                for (var i = 0, max = allInputs.length; i < max; i++){
+                        if (allInputs[i].type === 'checkbox' && allInputs[i].checked == true) {
+                                playlists += "&playlists[]=" + allInputs[i].value
+                        }
+                }
+                var params = {
+                        "playlists": playlists
+                }
+                var xhr = new XMLHttpRequest();
+                xhr.addEventListener("load", responseRecievedHandler3);
+                xhr.open("POST", "http://localhost:8080/transferSelected?access_token=" + access_token + playlists);
+                xhr.send()
+                }
+        }
+
+</script>
+<title>Swapify Music</title>
+<head>
+        <h1 id="logo">Swapify Music</h1>
+</head>
+<body onload="check4SpotAuth()">
+        <section id="logins">
+                <div id="apple-login" class="container-fluid">
+                        <h1>Step 2: Authorize with Apple</h1><br><br>
+                        <img id="apple_logo" src="apple_logo.png"/>
+                        <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
+                        <button class="apple_button_1" id="apple-music-authorize" onclick="logIn_Apple()">Authorize</button>
+                        <button class="apple_button_2" id="apple-music-unauthorize">Unauthorize</button>
+                </div>
+                <div id="spotify-login" class="container-fluid">
+                        <h1>Step 1: Authorize with Spotify</h1><br><br>
+                        <img id="spotify_logo" src="spotify_logo.png"/>
+                        <div id="profile_info"></div>
+                        <div id="container" hidden>
+                                <form action="/transferOnce">
+                                        <input id="search_bar" type="text" placeholder="Search by url..." name="search">
+                                        <button id= "search_submit" type="submit"><i class="fa fa-search"></i></button>
+                                </form>
+                        </div>
+                        <div id="buttons" hidden>
+                                <button class="transferbuttons" onclick="transferAll()">Transfer All</button>
+                                <button class="transferbuttons" onclick="transferSelected()">Transfer Selected</button>
+                        </div>
+                        <button id="spotify_button" onclick="loginSpotify()">Authorize</button>
+                </div>
+        </section>
+</body>
+</html>
