@@ -40,9 +40,61 @@
                 document.getElementById("search_bar").innerHTML += "<br><button onclick='transferAll()'>Transfer All</button><button onclick='transfer()'>Transfer</button>"
         }
 
+        function test(trans) {
+            var ids = [];
+            var music = MusicKit.getInstance();
+            for(var i = 0; i<trans.length;i++) {
+            let entry = music.api.search(trans[i], { limit: 5, types: 'artists,albums,songs' });
+
+            entry.then(function(ent) {
+                var song = {id: ent.songs.data[i].id, type: 'songs' }
+                console.log(song);
+                ids.push(song);
+            });
+        }
+        console.log(ids);
+                music.authorize().then(musicUserToken => {
+
+                        let apple = axios.create({
+                                baseURL: 'https://api.music.apple.com/v1',
+                                headers: {
+                                        'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                        'Music-User-Token': musicUserToken
+                                }
+                        })
+                        apple.post('/me/library/playlists', {
+                                attributes: {
+                                        name: 'Swap4',
+                                        description: 'what a playlist!'
+                                },
+                                relationships: {
+                                        tracks: {
+                                                data:  ids
+                                                        
+                                        }
+                                }
+                        })
+                        .then(res => {
+                        // successfully created playlist
+                        console.log("success");
+                        })
+                        .catch(error => {
+                        // error creating playlist
+                        console.log("error");
+                        });
+                })
+                .catch(error => {
+                    console.log("error");
+                //error
+                });
+            
+            
+       
+        }
         function logIn_Apple() {
                 var music = MusicKit.getInstance();
                 music.authorize().then(musicUserToken => {
+
                         let apple = axios.create({
                                 baseURL: 'https://api.music.apple.com/v1',
                                 headers: {
@@ -58,8 +110,7 @@
                                 relationships: {
                                         tracks: {
                                                 data:  [
-                                                        {
-                                                        id: '900032829',
+                                                        {id: '1462479922',
                                                         type: 'songs'
                                                         }]
                                         }
@@ -149,6 +200,8 @@
                         }
                 }
                 console.log(playlists);
+                var trans = ['6ix9ine fefe', 'let it go menzel', 'juice lizzo'];
+                test(trans);
                 return 0;
         }
 
@@ -165,6 +218,7 @@
                         <!--<button id="apple_button" onclick="logIn_Apple()"><a href="http://localhost:8080/redirect">Log In To Apple Music</a></button>-->
                         <button class="apple_button_1" id="apple-music-authorize" onclick="logIn_Apple()">Authorize</button>
                         <button class="apple_button_2" id="apple-music-unauthorize">Unauthorize</button>
+                        <button class="apple_button_3" id="getID" onclick="test()">test</button>
                 </div>
                 <div id="spotify-login" class="container-fluid">
                         <h1>Step 1: Authorize with Spotify</h1><br><br>
