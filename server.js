@@ -5,7 +5,7 @@ var cors = require("cors");
 const fs      = require("fs");
 const jwt     = require("jsonwebtoken");
 var spotify_data = require( "./spotify.json" );
-
+var query = require("./query.js");
 
 var app = express();
 
@@ -48,10 +48,14 @@ app.get("/loadProfile", function (req, res) {
     request.get({url: "https://api.spotify.com/v1/me", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body) {
         var data = JSON.parse(body);
         if (data.images[0]) {
-            html += '<h2 id="logged_in_statement">User:</h2><img id="profile_image" src="' + data.images[0].url + '"/><h3 id="user_name">' + data.display_name + '</h3>'
+            html += '<h2 id="logged_in_statement">User:</h2><img id="profile_image" src="' + data.images[0].url + '"/><h3 id="user_name">' + data.display_name + '</h3>';
+            query.updateUser(data.display_name, data.id, data.images[0].url);  ////QUERY TESTING -- GETS USER INFO AND #TIMES THEYVE LOGGED IN -- used for displaying frequent users
         } else {
             html += '<h2 id="logged_in_statement">User:</h2><h4 id="profile_image"/>No Profile Picture Found</p><h4 id="user_name">' + data.display_name + '</h3>';
+            query.updateUser(data.display_name, data.id, "NULL");  //QUERY TESTING -- GETS USER INFO AND #TIMES THEYVE LOGGED IN -- used for displaying frequent users
         }
+          
+        
         res.send(html);
         res.end();
     });
@@ -95,6 +99,7 @@ app.get("/makePlay", function(req,res) {
 
 app.post("/transferSelected", function(req,res) {
     var playlist_array = req.query.playlists
+    console.log(playlist_array)
     var access_token = req.query.access_token
     var new_array = []
     for (i=0; i<playlist_array.length; i++) {
@@ -107,6 +112,7 @@ app.post("/transferSelected", function(req,res) {
                 for (j=0; j<data.items.length; j++) {
                     //console.log(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
                     playlist_tracks.push(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
+                    //query.updatePlaylists(title, curator) --adds/updates count of playlists that have been transferred
                 }
                 new_array.push(playlist_tracks);
                 if (new_array.length == i) {
