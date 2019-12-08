@@ -142,61 +142,66 @@
 
         function responseRecievedHandler3() {
                 if (this.status==200) {
-                        var ids = [];
-                        var music = MusicKit.getInstance();
-                        for (j=0; j<this.length; j++)
-                                for(var i = 0; i<this.length;i++) {
-                                        let entry = music.api.search(this[i], { limit: 5, types: 'artists,albums,songs' });
+                        var data = JSON.parse(this.response);
+                        for (j=0; j<data.length; j++) {
+                                setTimeout(function() {
+                                        console.log(data[j])
+                                        var trans = data[j];
+                                        var ids = [];
+                                        var music = MusicKit.getInstance();
+                                        var orig_length = trans.length;
+                                        for(var i = 0; i<trans.length;i++) {
+                                                let entry = music.api.search(trans[i], { limit: 1, types: 'artists,albums,songs' });
 
-                                        entry.then(function(ent) {
-                                        var song = {id: ent.songs.data[0].id, type: 'songs' }
-                                        ids.push(song);
-                
-                                        }).then(function(result) {
-                                        console.log("these are results");
-                                        console.log(ids);
-                                        music.authorize().then(musicUserToken => {
+                                                entry.then(function(ent) {
+                                                if (ent.songs) {
+                                                        var song = {"id": ent.songs.data[0].id, "type": 'songs' }
+                                                        ids.push(song);
+                                                } else {
+                                                console.log("error");
+                                                        orig_length -= 1;
+                                                }
+                                                        }).then(function(result) {
+                                                                console.log("these are results");
+                                                                console.log(ids);
+                                                                music.authorize().then(musicUserToken => {
 
-                                                let apple = axios.create({
-                                                        baseURL: 'https://api.music.apple.com/v1',
-                                                        headers: {
-                                                                'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
-                                                                'Music-User-Token': musicUserToken
-                                                }
-                                        })
-                                        console.log("ids len: " + ids.length);
-                                        console.log(ids);
-                                        console.log("trans len: " + trans.length)
-                                        if(ids.length==trans.length) {
-                                        apple.post('/me/library/playlists', {
-                                                attributes: {
-                                                        name: 'App',
-                                                        description: 'what a playlist!'
-                                                },
-                                                relationships: {
-                                                        tracks: {
-                                                                data:  ids
+                                                                        let apple = axios.create({
+                                                                                baseURL: 'https://api.music.apple.com/v1',
+                                                                                headers: {
+                                                                                        'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                                                                        'Music-User-Token': musicUserToken
+                                                                                }
+                                                                        });
+                                                                        if(ids.length==orig_length) {
+                                                                                apple.post('/me/library/playlists', {
+                                                                                        attributes: {
+                                                                                                name: 'App',
+                                                                                                description: 'Transferred using Swapify.'
+                                                                                        },
+                                                                                        relationships: {
+                                                                                                tracks: {
+                                                                                                        data:  ids
                                                         
-                                        }
-                                }
-                        })
-                        .then(res => {
-                        // successfully created playlist
-                        console.log(res);
+                                                                                                }
+                                                                                        }
+                                                                                }).then(res => {
+                                                                                        console.log(res);
                         
-                        })
-                        .catch(error => {
-                        // error creating playlist
-                        console.log("error");
-                        });
-                }})
-            }).catch(error => {
-                    console.log(error);
+                                                                                }).catch(error => {
+                                                                                        console.log("error");
+                                                                                });
+                                                                        }
+                                                                });
+                                                        }).catch(error => {
+                                                                console.log(error);
                 //error
-                });
-        }}
-                } else {
-                        console.log("failure");
+                                                });
+                                        }
+                                });
+                        }
+                 } else {
+                        console.log('Error!');
                 }
         }
 
