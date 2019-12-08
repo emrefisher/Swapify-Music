@@ -144,61 +144,57 @@
                 if (this.status==200) {
                         var data = JSON.parse(this.response);
                         for (j=0; j<data.length; j++) {
-                                setTimeout(function() {
-                                        console.log(data[j])
-                                        var trans = data[j];
-                                        var ids = [];
-                                        var music = MusicKit.getInstance();
-                                        var orig_length = trans.length;
-                                        for(var i = 0; i<trans.length;i++) {
-                                                let entry = music.api.search(trans[i], { limit: 1, types: 'artists,albums,songs' });
-
-                                                entry.then(function(ent) {
-                                                if (ent.songs) {
-                                                        var song = {"id": ent.songs.data[0].id, "type": 'songs' }
-                                                        ids.push(song);
-                                                } else {
+                                console.log(data[j])
+                                var trans = data[j];
+                                var music = MusicKit.getInstance();
+                                var orig_length = trans.length;
+                                var ids = [];
+                                for(var i = 0; i<trans.length;i++) {
+                                        let entry = music.api.search(trans[i], { limit: 1, types: 'artists,albums,songs' });
+                                        entry.then(async function(ent) {
+                                        if (ent.songs) {
+                                                var song = {"id": ent.songs.data[0].id, "type": 'songs' }
+                                                ids.push(song);
+                                        } else {
                                                 console.log("error");
-                                                        orig_length -= 1;
-                                                }
-                                                        }).then(function(result) {
-                                                                console.log("these are results");
-                                                                console.log(ids);
-                                                                music.authorize().then(musicUserToken => {
+                                                orig_length -= 1;
+                                        }
+                                                }).then(function(result) {
+                                                        console.log(ids);
+                                                        music.authorize().then(function (musicUserToken) {
 
-                                                                        let apple = axios.create({
-                                                                                baseURL: 'https://api.music.apple.com/v1',
-                                                                                headers: {
-                                                                                        'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
-                                                                                        'Music-User-Token': musicUserToken
-                                                                                }
-                                                                        });
-                                                                        if(ids.length==orig_length) {
-                                                                                apple.post('/me/library/playlists', {
-                                                                                        attributes: {
-                                                                                                name: 'App',
-                                                                                                description: 'Transferred using Swapify.'
-                                                                                        },
-                                                                                        relationships: {
-                                                                                                tracks: {
-                                                                                                        data:  ids
+                                                                let apple = axios.create({
+                                                                        baseURL: 'https://api.music.apple.com/v1',
+                                                                        headers: {
+                                                                                'Authorization': "Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijk2NTVYWEsyVEMifQ.eyJpYXQiOjE1NzUyMjI5NTQsImV4cCI6MTU5MDc3NDk1NCwiaXNzIjoiMzhVTjJLODg3OSJ9.JX4gbQPhHqzhux9Fsl8XD39_whOkCZ-ERNE7HBBHSzxHFFg9F28y35JI3N1ZAn6sye1g3zEYH_O2M7JpvX8JpQ",
+                                                                                'Music-User-Token': musicUserToken
+                                                                        }
+                                                                });
+                                                                if(ids.length==orig_length) {
+                                                                        apple.post('/me/library/playlists', {
+                                                                                attributes: {
+                                                                                        name: 'App',
+                                                                                        description: 'Transferred using Swapify.'
+                                                                                },
+                                                                                relationships: {
+                                                                                        tracks: {
+                                                                                                data:  ids
                                                         
-                                                                                                }
-                                                                                        }
-                                                                                }).then(res => {
-                                                                                        console.log(res);
+                                                                                        }
+                                                                                }
+                                                                        }).then(res => {
+                                                                                console.log(res);
                         
-                                                                                }).catch(error => {
-                                                                                        console.log("error");
-                                                                                });
-                                                                        }
-                                                                });
-                                                        }).catch(error => {
-                                                                console.log(error);
+                                                                        }).catch(error => {
+                                                                                console.log("error");
+                                                                        });
+                                                                }
+                                                        });
+                                                }).catch(error => {
+                                                        console.log(error);
                 //error
-                                                });
-                                        }
-                                });
+                                        });
+                                }
                         }
                  } else {
                         console.log('Error!');
@@ -209,24 +205,44 @@
                 var urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get("access_token")) {
                         var access_token = urlParams.get("access_token");
-
+                }
                 var playlists = ""
                 var allInputs = document.getElementsByTagName("input");
                 for (var i = 0, max = allInputs.length; i < max; i++){
                         if (allInputs[i].type === 'checkbox' && allInputs[i].checked == true) {
                                 playlists += "&playlists[]=" + allInputs[i].value
+                                var params = {
+                                        "playlists": playlists
+                                }
+                                var xhr = new XMLHttpRequest();
+                                xhr.addEventListener("load", responseRecievedHandler3);
+                                xhr.open("POST", "http://localhost:8080/transferSelected?access_token=" + access_token + playlists);
+                                xhr.send();
                         }
-                }
-                var params = {
-                        "playlists": playlists
-                }
-                var xhr = new XMLHttpRequest();
-                xhr.addEventListener("load", responseRecievedHandler3);
-                xhr.open("POST", "http://localhost:8080/transferSelected?access_token=" + access_token + playlists);
-                xhr.send()
                 }
         }
 
+
+        function transferAll() {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get("access_token")) {
+                        var access_token = urlParams.get("access_token");
+                }
+                var playlists = ""
+                var allInputs = document.getElementsByTagName("input");
+                for (var i=0, max = allInputs.length; i< max; i++){
+                        if (allInputs[i].type === "checkbox") {
+                                playlists += "&playlists[]=" + allInputs[i].value
+                                var params = {
+                                        "playlists": playlists
+                                }
+                                var xhr = new XMLHttpRequest();
+                                xhr.addEventListener("load", responseRecievedHandler3);
+                                xhr.open("POST", "http://localhost:8080/transferSelected?access_token=" + access_token + playlists);
+                                xhr.send();
+                        }
+                }
+        }
 </script>
 <title>Swapify Music</title>
 <head>
@@ -252,10 +268,12 @@
                                 </form>
                         </div>
                         <div id="buttons" hidden>
-                                <button class="transferbuttons" onclick="transferAll()">Transfer All</button>
                                 <button class="transferbuttons" onclick="transferSelected()">Transfer Selected</button>
                         </div>
                         <button id="spotify_button" onclick="loginSpotify()">Authorize</button>
+                </div>
+                <div id="trending" class="container-fluid">
+                        <h1>Trending</h1>
                 </div>
         </section>
 </body>
