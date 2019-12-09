@@ -15,7 +15,7 @@ html {
 #spotify-login {
     font-variant: small-caps;
     font-size: 20pt;
-    background-color: rgba(0,0,0,0.95);
+    background-color: rgba(0,0,0,0.9);
     height: 90%;
     text-align: center;
     border: 5pt solid lightgreen;
@@ -30,7 +30,7 @@ html {
     font-variant: small-caps;
     font-size: 20pt;
     background-color: black;
-    opacity: 0.95;
+    opacity: 0.9;
     height: 90%;
     color: whitesmoke;
     text-align: center;
@@ -41,6 +41,20 @@ html {
     margin-left: 840px;
 }
 
+#trending {
+    font-variant: small-caps;
+    font-size: 20pt;
+    background-color: black;
+    opacity: 0.9;
+    height: 30%;
+    color: whitesmoke;
+    text-align: center;
+    border: 5pt solid orangered;
+    border-radius: 20px;
+    position: absolute;
+    width: 100%;
+    margin-top: 51%;
+}
 button {
     background-color: black;
     color: whitesmoke;
@@ -50,32 +64,34 @@ button {
 }
 
 #spotify_button {
-    margin-top: 55%;
+    height: 170px;
+    width: 170px;
+    margin-top: 20%;
     border: 1px solid white;
     position: static;
+    border-radius: 20px;
 }
 
 .apple_button_1 {
-    margin-top: 60%;
+    height: 170px;
+    width: 170px;
+    margin-top: 25%;
     border: 1px solid white;
-}
-
-.apple_button_2 {
-    margin-top: 60%;
-    border: 1px solid white;
+    position: static;
+    border-radius: 20px;
 }
 
 #spotify_button:hover {
     background-color: lightgreen;
     color: black;
-    border-radius: 20px;
+    border-radius: 30px;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 .apple_button_1:hover {
     background-color: violet;
     color: black;
-    border-radius: 20px;
+    border-radius: 30px;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
@@ -83,7 +99,7 @@ button {
     background-color: violet;
     color: black;
     border-radius: 20px;
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 12px 16px 0 rgba(26, 14, 14, 0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
 #bar {
@@ -103,10 +119,12 @@ button {
     text-align: left;
     height: 40px;
     width: 80%;
-    background-color: rgb(82, 124, 85);
+    background-color: lightgreen;
     float: left;
-    border: 2px solid black;
+    border: 1px solid black;
+    border-radius: 10px;
     position: relative;
+    text-indent: 10px;
 }
 
 #search_submit {
@@ -114,8 +132,9 @@ button {
     width: 20%;
     height: 40px;
     border: 2px solid black;
+    border-radius: 10px;
     position: relative;
-    background-color:  rgb(82, 124, 85);
+    background-color: lightgreen;
     background-image: url("magnifying_glass.png");
     background-size: 33px 33px;
     background-repeat: no-repeat;
@@ -141,9 +160,9 @@ input::-webkit-input-placeholder {
 }
 
 #apple_logo {
-    margin-top: 10px;
-    width: 480px;
-    height: 110px;
+    margin-top: 15px;
+    width: 540px;
+    height: 130px;
 }
 
 #profile_image {
@@ -161,7 +180,7 @@ input::-webkit-input-placeholder {
 
 #logged_in_statement {
     margin-right: 400px;
-    margin-top: 150px;
+    margin-top: 120px;
     color: rgb(216, 215, 215);
     font-family: sans-serif;
 }
@@ -174,15 +193,20 @@ input::-webkit-input-placeholder {
     overflow-y: scroll;
     margin-left: 45%;
     margin-right: 10%;
-    margin-top: -300px;
+    margin-top: -320px;
     text-align: none;
+    border: 0.5px solid grey;
 }
 
 .checkboxes {
     text-align: left;
     display: block;
     border-bottom: 0.5px solid grey;
-    border-top: 0.5px solid grey;
+    text-indent: 10px;
+}
+
+.checkboxes:hover {
+    background-color: grey;
 }
 
 .transferbuttons {
@@ -210,4 +234,29 @@ input [type=checkbox]{
     position: relative;
     margin-right: 400px;
     margin-top: 10px;
+}
+
+#container2 {
+    font-size: 17pt;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: black;
+    height: 300px;
+    overflow-y: scroll;
+    margin-right: 30%;
+    margin-left: 30%;
+    margin-top: 150px;
+    text-align: none;
+    border: 0.5px solid grey;
+}
+
+#apple-music-unauthorize {
+    font-size: 16px;
+    width: 170px;
+    height: 30px;
+}
+
+#container2_title {
+    border-bottom: 2px solid grey;
+    background-color: violet;
+    color: black;
 }
