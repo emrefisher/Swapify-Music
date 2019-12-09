@@ -13,6 +13,15 @@ var key = require('./dbkey.json');
 
 var app = express();
 
+var con = mysql.createConnection({
+    host: 'swapify.mysql.database.azure.com',
+    user: key.user,
+    password: key.password,
+    database: 'swapify',
+    port: 3306,
+    ssl: true
+    });
+
 app.use( express.static("public")).use(cors());
 
 app.listen(8080, () => {
@@ -69,7 +78,7 @@ app.get("/grabPlaylists", function (req, res) {
         request.get({url: "https://api.spotify.com/v1/users/" + data.id + "/playlists", headers: {"Authorization": "Bearer " + access_token}}, function (error, response, body2) {
             var data2 = JSON.parse(body2);
             for (i=0; i<data2.items.length; i++) {
-                html += '<div class="checkboxes"><input onclick="transferSelected()" type="checkbox" class="checkbox" value="' + data2.items[i].tracks.href + '"/>  ' + data2.items[i].name + '</div>';
+                html += '<div class="checkboxes" onclick="transferSelected(\'' + data2.items[i].tracks.href + '\')" id="' + data2.items[i].tracks.href + '" name="' + data2.items[i].name + '"/>  ' + data2.items[i].name + '</div>';
             }
             res.send(html);
             res.end();
@@ -78,7 +87,19 @@ app.get("/grabPlaylists", function (req, res) {
 });
 
 app.get("/transferOnce", function (req, res) {
-    return 0;
+    var access_token = req.query.access_token;
+    var base_uri = req.query.uri;
+    var playlist_id = base_uri.split("/").pop();
+    console.log(playlist_id);
+    request.get({
+        uri: "https://api.spotify.com/v1/playlists/" + playlist_id,
+        headers: {
+            "Authorization:": "Bearer " + access_token
+        }
+    }, function (error, resopnse, body) {
+        var data = JSON.parse(body);
+        console.log(data);
+    });
 });
 
 app.get("/makePlay", function(req,res) {
@@ -97,36 +118,25 @@ app.get("/makePlay", function(req,res) {
 
 
 app.post("/transferSelected", function(req,res) {
-    var playlist_array = req.query.playlists
-    var access_token = req.query.access_token
-    var new_array = []
-    for (i=0; i<playlist_array.length; i++) {
-        request.get({
-            uri: playlist_array[i],
-            headers: {"Authorization": "Bearer " + access_token}
-        }, function (error, response, body) {
-                var data = JSON.parse(body);
-                var playlist_tracks = []
-                for (j=0; j<data.items.length; j++) {
+    var playlist_name = req.query.playlist_name;
+    var playlist = req.query.playlist;
+    var access_token = req.query.access_token;
+    var new_array = [];
+    request.get({
+        uri: playlist,
+        headers: {"Authorization": "Bearer " + access_token}
+    }, function (error, response, body) {
+            var data = JSON.parse(body);
+            var playlist_tracks = []
+            for (j=0; j<data.items.length; j++) {
                     //console.log(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
-                    playlist_tracks.push(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
-                }
-                new_array.push(playlist_tracks);
-                if (new_array.length == i) {
-                    res.send(new_array);
-                }
-            });
-    }
+                playlist_tracks.push(data.items[j].track.name + " " + data.items[j].track.artists[0].name);
+            }
+            new_array.push(playlist_tracks);
+            res.send({"song_array": new_array, "playlist_name": playlist_name});
+            }
+    )
 });
-
-var con = mysql.createConnection({
-    host: 'swapify.mysql.database.azure.com',
-    user: key.user,
-    password: key.password,
-    database: 'swapify',
-    port: 3306,
-    ssl: true
-    });
 
 con.connect(
     function(err){
